@@ -39,7 +39,7 @@ LuaJIT / Lua 5.1。
 # tlua.toml
 [dependencies]
 # 私有仓库必须显式给 url，避免包管理器按公开仓库探测
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.0", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.1", url = "git@github.com:types-lua/typelua-stdlib.git" }
 ```
 
 ```bash
@@ -86,7 +86,7 @@ tlua test --lua luajit --target 5.1
 测试覆盖各模块边界、随机 Base64/hex 往返、随机 JSON 往返、path normalize
 幂等性、UTC 日期大范围往返、shuffle 排列性质、错误分支和外部项目安装。
 
-完整 API 说明见 [README.md](README.md)。
+完整 API 说明见 [README.md](README.md)，安全边界和解析限制见 [SECURITY.md](SECURITY.md)。
 
 ## License
 

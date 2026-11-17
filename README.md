@@ -61,7 +61,7 @@ version = "v0.1.0"
 [dependencies]
 # Private repository: give the Git URL explicitly so the package manager does
 # not try an anonymous public lookup.
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.0", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.1", url = "git@github.com:types-lua/typelua-stdlib.git" }
 ```
 
 ```bash
@@ -300,8 +300,9 @@ csv.encode(rows) / encodeWith(rows, { delimiter })
 
 Strict RFC 4180-style behavior: quoted commas/newlines, doubled quotes,
 CRLF/LF records, and errors for malformed quotes, bare CR, truncated fields and
-limit violations. The encoder uses CRLF between records and quotes only when
-needed.
+limit violations. The encoder uses CRLF between records and quotes when needed;
+empty fields are quoted as `""` so a single-empty-field row is distinguishable
+from no row.
 
 ### set
 
@@ -404,10 +405,16 @@ tlua test --lua luajit --target 5.1
 ./scripts/check-package.sh
 ```
 
-The suite includes per-module edge cases, randomized Base64/hex round-trips,
-randomized JSON round-trips, path-normalization idempotence, time civil-date
+The suite includes per-module edge cases, SHA/HMAC standard vectors,
+randomized Base64/hex/CSV/binary round-trips, randomized JSON round-trips,
+strict UTF-8 rejection cases, path-normalization idempotence, time civil-date
 round-trips over a wide timestamp range, shuffle permutation checks, error
-cases and an external-project install smoke test.
+cases, OS-entropy/UUID checks and an external-project install smoke test.
+
+## Security
+
+See [`SECURITY.md`](SECURITY.md) for parser limits, path/symlink caveats,
+hash/entropy guidance and CSV formula-injection notes.
 
 ## License
 

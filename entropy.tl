@@ -25,6 +25,9 @@ local function readWithLimit(count: integer, maxBytes: integer): EntropyResult
   if count < 0 or count > maxBytes then
     return { ok = false, data = "", error = "entropy byte count is out of range" }
   end
+  if count == 0 then
+    return { ok = true, data = "", error = "" }
+  end
   local handle: any = nil
   local openErr: any = nil
   handle, openErr = io.open("/dev/urandom", "rb")

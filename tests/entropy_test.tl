@@ -10,6 +10,8 @@ return {
     local result = entropy.bytes(32)
     T.ok(result.ok, "bytes ok")
     T.eq(#result.data, 32, "length")
+    T.ok(entropy.bytes(0).ok, "zero bytes")
+    T.eq(#entropy.bytes(0).data, 0, "zero length")
     T.ok(not entropy.bytes(-1).ok, "negative")
     T.ok(not entropy.bytes(1024 * 1024 + 1).ok, "too many")
   end,

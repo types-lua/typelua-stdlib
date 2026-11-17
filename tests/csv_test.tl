@@ -53,7 +53,7 @@ return {
     local encoded: string = csv.encode(rows)
     T.eq(
       encoded,
-      "a,b\r\n\"with,comma\",\"with\"\"quote\"\r\n\"line1\nline2\",",
+      "a,b\r\n\"with,comma\",\"with\"\"quote\"\r\n\"line1\nline2\",\"\"",
       "encoded"
     )
     local decoded = csv.parse(encoded)

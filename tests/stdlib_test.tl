@@ -4,7 +4,7 @@ import fs from "../fs"
 
 return {
   ["root facade exposes every module"] = function(): void
-    T.eq(std.version, "v0.2.0", "version")
+    T.eq(std.version, "v0.2.1", "version")
     T.eq(std.strings.trim(" x "), "x", "strings")
     T.eq(std.lists.sum({ 1, 2 }), 3, "lists")
     T.eq(std.maps.count<string, integer>({ a = 1 }), 1, "maps")

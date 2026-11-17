@@ -21,7 +21,7 @@ import unicode from "./unicode"
 import entropy from "./entropy"
 
 return {
-  version = "v0.2.0",
+  version = "v0.2.1",
   bitops = bitops,
   strings = strings,
   lists = lists,

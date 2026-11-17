@@ -226,6 +226,9 @@ local function parse(text: string): CsvResult
 end
 
 local function quoteField(value: string, delimiter: string): string
+  -- A single empty field would otherwise encode as an empty record, which is
+  -- indistinguishable from "no row" on parse. Quoting it preserves the row.
+  if value == "" then return "\"\"" end
   local needsQuote: boolean = false
   for i: integer = 1, #value do
     local c: string = string.sub(value, i, i)

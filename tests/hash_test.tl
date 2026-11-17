@@ -67,6 +67,12 @@ return {
       "case 3"
     )
     T.eq(#hash.hmacSha256("k", "d"), 32, "raw HMAC length")
+    local longKey: string = repeatByte(0xAA, 131)
+    T.eq(
+      hash.hmacSha256Hex(longKey, "Test Using Larger Than Block-Size Key - Hash Key First"),
+      "60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f0ee37f54",
+      "long key"
+    )
   end,
 
   ["constant-time comparison"] = function(): void
