@@ -62,7 +62,7 @@ name = "my-service"
 version = "v0.1.0"
 
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.2.6"
+"github.com/types-lua/typelua-stdlib" = "^v0.2.7"
 ```
 
 ```bash
@@ -74,7 +74,7 @@ The repository is public. If you consume it through a private mirror/fork, use
 the explicit form and point `url` at that mirror:
 
 ```toml
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.6", url = "git@github.com:your-org/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.7", url = "git@github.com:your-org/typelua-stdlib.git" }
 ```
 
 Then import the package root or an individual module:
@@ -404,7 +404,12 @@ netip.parseCidr(text)                            -- {ok, cidr, error}
 netip.network(cidr) / contains(cidr, ip) / containsText(cidr, text)
 netip.isV4 / isV6 / equal
 netip.isUnspecified / isLoopback / isPrivate / isLinkLocal / isMulticast
+netip.isV4Mapped / mappedV4
 ```
+
+IPv4-mapped IPv6 addresses (`::ffff:a.b.c.d`) are recognized and classified as
+their IPv4 equivalent, so a mapped private/loopback address cannot bypass a
+policy check.
 
 Strict decimal IPv4 (no leading zeroes), strict IPv6 with `::` compression
 including embedded IPv4, canonical RFC 5952 formatting and prefix-bit-aware

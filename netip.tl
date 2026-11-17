@@ -348,50 +348,79 @@ local function containsText(cidr: Cidr, ipText: string): boolean
   return contains(cidr, parsed.ip!)
 end
 
+--- Returns the embedded IPv4 address for an IPv4-mapped IPv6 address
+--- (`::ffff:a.b.c.d`), otherwise nil. Classification helpers use this so a
+--- mapped loopback/private address cannot bypass policy checks.
+local function mappedV4(ip: IpAddress): IpAddress | nil
+  if ip.version ~= 6 then return nil end
+  for i: integer = 1, 10 do
+    if string.byte(ip.bytes, i) ~= 0 then return nil end
+  end
+  if string.byte(ip.bytes, 11) ~= 255 or string.byte(ip.bytes, 12) ~= 255 then
+    return nil
+  end
+  return { version = 4, bytes = string.sub(ip.bytes, 13, 16) }
+end
+
+local function isV4Mapped(ip: IpAddress): boolean
+  return mappedV4(ip) ~= nil
+end
+
+local function effective(ip: IpAddress): IpAddress
+  local mapped: IpAddress | nil = mappedV4(ip)
+  if mapped ~= nil then return mapped! end
+  return ip
+end
+
 local function firstByte(ip: IpAddress): integer
   return string.byte(ip.bytes, 1)!
 end
 
 local function isUnspecified(ip: IpAddress): boolean
-  for i: integer = 1, #ip.bytes do
-    if string.byte(ip.bytes, i) ~= 0 then return false end
+  local value: IpAddress = effective(ip)
+  for i: integer = 1, #value.bytes do
+    if string.byte(value.bytes, i) ~= 0 then return false end
   end
   return true
 end
 
 local function isLoopback(ip: IpAddress): boolean
-  if ip.version == 4 then return firstByte(ip) == 127 end
-  return ip.bytes == string.char(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+  local value: IpAddress = effective(ip)
+  if value.version == 4 then return firstByte(value) == 127 end
+  return value.bytes == string.char(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
 end
 
 local function isPrivate(ip: IpAddress): boolean
-  if ip.version == 4 then
-    local a: integer = string.byte(ip.bytes, 1)!
-    local b: integer = string.byte(ip.bytes, 2)!
+  local value: IpAddress = effective(ip)
+  if value.version == 4 then
+    local a: integer = string.byte(value.bytes, 1)!
+    local b: integer = string.byte(value.bytes, 2)!
     if a == 10 then return true end
     if a == 172 and b >= 16 and b <= 31 then return true end
     if a == 192 and b == 168 then return true end
     return false
   end
-  local first: integer = firstByte(ip)
+  local first: integer = firstByte(value)
   return first >= 0xFC and first <= 0xFD
 end
 
 local function isLinkLocal(ip: IpAddress): boolean
-  if ip.version == 4 then
-    return string.byte(ip.bytes, 1)! == 169 and string.byte(ip.bytes, 2)! == 254
+  local value: IpAddress = effective(ip)
+  if value.version == 4 then
+    return string.byte(value.bytes, 1)! == 169 and string.byte(value.bytes, 2)! == 254
   end
-  local first: integer = firstByte(ip)
-  local second: integer = string.byte(ip.bytes, 2)!
+  local first: integer = firstByte(value)
+  local second: integer = string.byte(value.bytes, 2)!
   return first == 0xFE and second >= 0x80 and second <= 0xBF
 end
 
 local function isMulticast(ip: IpAddress): boolean
-  if ip.version == 4 then
-    local first: integer = firstByte(ip)
+  local value: IpAddress = effective(ip)
+  if value.version == 4 then
+    local first: integer = firstByte(value)
     return first >= 224 and first <= 239
   end
-  return firstByte(ip) == 0xFF
+  return firstByte(value) == 0xFF
 end
 
 return {
@@ -412,4 +441,6 @@ return {
   isPrivate = isPrivate,
   isLinkLocal = isLinkLocal,
   isMulticast = isMulticast,
+  isV4Mapped = isV4Mapped,
+  mappedV4 = mappedV4,
 }

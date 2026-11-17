@@ -94,5 +94,16 @@ return {
     T.ok(netip.isUnspecified(netip.parse("0.0.0.0").ip!), "v4 unspecified")
     T.ok(netip.isUnspecified(netip.parse("::").ip!), "v6 unspecified")
     T.ok(netip.isPrivate(netip.parse("fc00::1").ip!), "v6 unique local")
+    local mappedLoopback = netip.parse("::ffff:127.0.0.1").ip!
+    local mappedPrivate = netip.parse("::ffff:10.0.0.1").ip!
+    local mappedPublic = netip.parse("::ffff:8.8.8.8").ip!
+    T.ok(netip.isV4Mapped(mappedLoopback), "v4-mapped")
+    T.eq(netip.format(netip.mappedV4(mappedLoopback)!), "127.0.0.1", "mappedV4")
+    T.ok(netip.isLoopback(mappedLoopback), "mapped loopback")
+    T.ok(netip.isPrivate(mappedPrivate), "mapped private")
+    T.ok(not netip.isPrivate(mappedPublic), "mapped public")
+    T.ok(netip.isLinkLocal(netip.parse("::ffff:169.254.1.1").ip!), "mapped link local")
+    T.ok(netip.isMulticast(netip.parse("::ffff:224.0.0.1").ip!), "mapped multicast")
+    T.ok(netip.isUnspecified(netip.parse("::ffff:0.0.0.0").ip!), "mapped unspecified")
   end,
 }
