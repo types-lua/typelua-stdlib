@@ -29,7 +29,7 @@ LuaJIT / Lua 5.1。
 ```toml
 # tlua.toml
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.1.0"
+"github.com/types-lua/typelua-stdlib" = "^v0.1.1"
 ```
 
 ```bash

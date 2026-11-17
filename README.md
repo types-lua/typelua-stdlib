@@ -49,7 +49,7 @@ name = "my-service"
 version = "v0.1.0"
 
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.1.0"
+"github.com/types-lua/typelua-stdlib" = "^v0.1.1"
 ```
 
 ```bash
