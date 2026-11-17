@@ -119,6 +119,7 @@ strings.trim(s) / trimStart / trimEnd
 strings.trimChars(s, chars)
 strings.lower(s) / upper(s)
 strings.startsWith / endsWith / contains / includes
+strings.find(s, needle, start)                    -- 1-based, nil = missing
 strings.indexOf / indexOfFrom / lastIndexOf       -- 1-based, 0 = missing
 strings.split(s, sep) / splitWhitespace(s) / lines(s)
 strings.join(parts, sep)
