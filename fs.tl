@@ -133,6 +133,15 @@ local function size(path: string): FsSizeResult
   if handle == nil then
     return { ok = false, size = 0, error = tostring(openErr) }
   end
+  -- Some runtimes let seek("end") succeed on a directory. Probe with a read,
+  -- exactly like isFile, so size() also rejects non-regular files.
+  local probe: any = nil
+  local probeErr: any = nil
+  probe, probeErr = handle:read(1)
+  if probe == nil and probeErr ~= nil then
+    handle:close()
+    return { ok = false, size = 0, error = tostring(probeErr) }
+  end
   local position: any = nil
   local seekErr: any = nil
   position, seekErr = handle:seek("end")
