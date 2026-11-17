@@ -12,7 +12,7 @@ import fs from "./fs"
 import random from "./random"
 
 return {
-  version = "v0.1.1",
+  version = "v0.1.2",
   strings = strings,
   lists = lists,
   maps = maps,

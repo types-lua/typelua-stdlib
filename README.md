@@ -51,7 +51,7 @@ version = "v0.1.0"
 [dependencies]
 # Private repository: give the Git URL explicitly so the package manager does
 # not try an anonymous public lookup.
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.1.1", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.1.2", url = "git@github.com:types-lua/typelua-stdlib.git" }
 ```
 
 ```bash
