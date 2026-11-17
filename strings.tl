@@ -110,6 +110,10 @@ local function endsWith(s: string, suffix: string): boolean
   return #suffix <= #s and string.sub(s, #s - #suffix + 1) == suffix
 end
 
+local function find(s: string, needle: string, start: integer): integer | nil
+  return findPlain(s, needle, start)
+end
+
 local function contains(s: string, needle: string): boolean
   return findPlain(s, needle, 1) ~= nil
 end
@@ -398,6 +402,7 @@ return {
   upper = upper,
   startsWith = startsWith,
   endsWith = endsWith,
+  find = find,
   contains = contains,
   includes = contains,
   indexOf = indexOf,

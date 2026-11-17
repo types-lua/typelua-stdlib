@@ -38,9 +38,10 @@ LuaJIT / Lua 5.1。
 ```toml
 # tlua.toml
 [dependencies]
-# 私有仓库必须显式给 url，避免包管理器按公开仓库探测
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.2", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = "^v0.2.3"
 ```
+
+仓库已公开；如果通过私有镜像/fork 使用，再加 `url` 指向镜像。
 
 ```bash
 tlua mod get

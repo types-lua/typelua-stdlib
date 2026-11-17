@@ -59,9 +59,7 @@ name = "my-service"
 version = "v0.1.0"
 
 [dependencies]
-# Private repository: give the Git URL explicitly so the package manager does
-# not try an anonymous public lookup.
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.2", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = "^v0.2.3"
 ```
 
 ```bash
@@ -69,9 +67,12 @@ tlua mod get
 tlua mod vendor
 ```
 
-If your Git client is configured for HTTPS instead of SSH, use
-`https://github.com/types-lua/typelua-stdlib.git` as the `url` and make sure
-your credential helper can access the private repository.
+The repository is public. If you consume it through a private mirror/fork, use
+the explicit form and point `url` at that mirror:
+
+```toml
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.3", url = "git@github.com:your-org/typelua-stdlib.git" }
+```
 
 Then import the package root or an individual module:
 
