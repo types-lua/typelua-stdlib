@@ -15,7 +15,7 @@ LuaJIT / Lua 5.1。
 | `maps` | keys/values/entries、get/set/remove、merge、pick/omit、mapValues、filter、equals |
 | `mathx` | clamp、gcd/lcm、素数、阶乘/斐波那契、round、插值、median |
 | `path` | POSIX normalize/join/dirname/basename/extname、parse、relative、isWithin |
-| `encoding` | 严格 Base64/Base64URL、hex、percent/URL、form 编码 |
+| `encoding` | 严格 Base64/Base64URL/Base32、hex、percent/URL、form 编码 |
 | `json` | 严格解析、确定性编码、pretty、null sentinel、深度/大小限制 |
 | `time` | UTC 日历、ISO-8601 解析/格式化、日边界、duration |
 | `fs` | 普通文件读写/追加/按行/大小/重命名/删除/复制，统一 result record |
@@ -28,6 +28,9 @@ LuaJIT / Lua 5.1。
 | `binary` | 边界检查的字节读写、显式大小端 |
 | `unicode` | 严格 UTF-8 校验、解码/编码、码点计数 |
 | `entropy` | POSIX `/dev/urandom` 安全随机字节、UUID v4 |
+| `netip` | 严格 IPv4/IPv6 解析、规范化格式、CIDR 包含判断 |
+| `crc32` | CRC-32 IEEE、CRC-32C、流式 extend、LevelDB mask |
+| `collections` | 有界 FIFO 队列、动态栈、有界二叉优先队列 |
 | `bitops` | 可移植 32 位位运算，供 hash/random 使用 |
 
 不包含：YAML/XML、HTTP、加密/签名协议、目录遍历、时区数据库、国际化。
@@ -38,7 +41,7 @@ LuaJIT / Lua 5.1。
 ```toml
 # tlua.toml
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.2.3"
+"github.com/types-lua/typelua-stdlib" = "^v0.2.4"
 ```
 
 仓库已公开；如果通过私有镜像/fork 使用，再加 `url` 指向镜像。

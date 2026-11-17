@@ -42,6 +42,9 @@ print(std.path.join({ "/srv", "app", "config.json" }))
 | `binary` | bounds-checked byte reader/writer with explicit endianness |
 | `unicode` | strict UTF-8 validation, decode/encode, code-point count |
 | `entropy` | OS entropy bytes and UUID v4 generation (POSIX `/dev/urandom`) |
+| `netip` | strict IPv4/IPv6 parsing, canonical formatting, CIDR containment |
+| `crc32` | CRC-32 IEEE and CRC-32C checksums, streaming extend, LevelDB mask |
+| `collections` | bounded FIFO queue, dynamic stack, bounded binary priority queue |
 | `bitops` | portable 32-bit bit operations used by hash/random |
 
 What is deliberately **not** included: YAML/XML, HTTP, encryption/signature
@@ -59,7 +62,7 @@ name = "my-service"
 version = "v0.1.0"
 
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.2.3"
+"github.com/types-lua/typelua-stdlib" = "^v0.2.4"
 ```
 
 ```bash
@@ -71,7 +74,7 @@ The repository is public. If you consume it through a private mirror/fork, use
 the explicit form and point `url` at that mirror:
 
 ```toml
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.3", url = "git@github.com:your-org/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.4", url = "git@github.com:your-org/typelua-stdlib.git" }
 ```
 
 Then import the package root or an individual module:
@@ -198,6 +201,7 @@ does not allow `"/srv/app"` to contain `"/srv/application"`.
 ```tl
 encoding.base64Encode(data) / base64Decode(text)   -- strict DecodeResult
 encoding.base64UrlEncode(data) / base64UrlDecode(text)
+encoding.base32Encode(data) / base32Decode(text)
 encoding.hexEncode(data) / hexEncodeUpper(data) / hexDecode(text)
 encoding.percentEncode(text) / percentDecode(text) -- URL component encoding
 encoding.formEncode(text) / formDecode(text)       -- application/x-www-form-urlencoded
@@ -390,6 +394,51 @@ Uses the operating system's `/dev/urandom` directly, never the deterministic
 `random` generator or the clock. On platforms without that device the result is
 an explicit error; there is no insecure fallback. UUID v4 sets the standard
 version/variant bits from 122 random bits.
+
+### netip
+
+```tl
+netip.parse(text) / parseV4 / parseV6            -- {ok, ip, error}
+netip.format(ip) / formatCidr(cidr)
+netip.parseCidr(text)                            -- {ok, cidr, error}
+netip.network(cidr) / contains(cidr, ip) / containsText(cidr, text)
+netip.isV4 / isV6 / equal
+netip.isUnspecified / isLoopback / isPrivate / isLinkLocal / isMulticast
+```
+
+Strict decimal IPv4 (no leading zeroes), strict IPv6 with `::` compression
+including embedded IPv4, canonical RFC 5952 formatting and prefix-bit-aware
+CIDR containment. No DNS, zone identifiers or IPv4 shorthand. Useful for
+allowlists and SSRF-style checks.
+
+### crc32
+
+```tl
+crc32.crc32(data) / crc32Hex(data)                -- IEEE 802.3
+crc32.crc32c(data) / crc32cHex(data)              -- Castagnoli
+crc32.crc32Extend(crc, data) / crc32cExtend(crc, data)
+crc32.crc32cMask(crc) / crc32cUnmask(masked)
+```
+
+Portable reflected CRC implementations. `*Extend` chains finalized CRCs and
+matches LevelDB's record format; CRC is an integrity check, not a MAC.
+
+### collections
+
+```tl
+local q = collections.Queue.new<string>(8)          -- capacity required
+q:enqueue(value) / dequeue() / peek() / size() / isFull() / toArray()
+
+local s = collections.Stack.new<integer>()
+s:push(value) / pop() / peek() / size() / toArray()
+
+local pq = collections.PriorityQueue.new<integer>(8, function(a, b) return a < b end)
+pq:push(value) / pop() / peek() / size() / isFull()
+```
+
+Queue and priority queue are bounded; `enqueue`/`push` return false when full.
+PriorityQueue is a binary min-heap (swap the comparator for max-heap behavior);
+`toArray` returns heap order, not sorted order.
 
 ### bitops
 

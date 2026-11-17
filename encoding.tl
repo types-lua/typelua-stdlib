@@ -11,6 +11,7 @@ type DecodeResult = {
 }
 
 local BASE64: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+local BASE32: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 local BASE64URL: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 local HEX_LOWER: string = "0123456789abcdef"
 local HEX_UPPER: string = "0123456789ABCDEF"
@@ -157,6 +158,77 @@ local function base64UrlDecode(text: string): DecodeResult
   return base64DecodeWith(text, BASE64URL, false)
 end
 
+local function base32Encode(data: string): string
+  local out: string[] = {}
+  local buffer: integer = 0
+  local bits: integer = 0
+  for i: integer = 1, #data do
+    buffer = math.floor(buffer * 256 + string.byte(data, i)!)
+    bits = bits + 8
+    while bits >= 5 do
+      bits = bits - 5
+      local index: integer = math.floor((buffer / 2 ^ bits) % 32)
+      out[#out + 1] = string.sub(BASE32, index + 1, index + 1)
+      buffer = math.floor(buffer % 2 ^ bits)
+    end
+  end
+  if bits > 0 then
+    local index: integer = math.floor((buffer * 2 ^ (5 - bits)) % 32)
+    out[#out + 1] = string.sub(BASE32, index + 1, index + 1)
+  end
+  while #out % 8 ~= 0 do out[#out + 1] = "=" end
+  return table.concat(out)
+end
+
+local function base32Value(byte: integer): integer
+  if byte >= 65 and byte <= 90 then return byte - 65 end
+  if byte >= 50 and byte <= 55 then return byte - 24 end
+  return -1
+end
+
+local function base32Decode(text: string): DecodeResult
+  local body: string = text
+  local pad: integer = 0
+  while #body > 0 and string.sub(body, -1) == "=" do
+    pad = pad + 1
+    body = string.sub(body, 1, -2)
+  end
+  if pad > 6 or string.find(body, "=") ~= nil then
+    return failure("invalid Base32 padding")
+  end
+  local remainder: integer = #body % 8
+  if remainder == 1 or remainder == 3 or remainder == 6 then
+    return failure("invalid Base32 length")
+  end
+  local expectedPad: integer = 0
+  if remainder == 2 then expectedPad = 6
+  elseif remainder == 4 then expectedPad = 4
+  elseif remainder == 5 then expectedPad = 3
+  elseif remainder == 7 then expectedPad = 1
+  end
+  if pad ~= 0 and pad ~= expectedPad then
+    return failure("invalid Base32 padding")
+  end
+  local out: string[] = {}
+  local buffer: integer = 0
+  local bits: integer = 0
+  for i: integer = 1, #body do
+    local value: integer = base32Value(string.byte(body, i)!)
+    if value < 0 then return failure("invalid Base32 character") end
+    buffer = math.floor(buffer * 32 + value)
+    bits = bits + 5
+    while bits >= 8 do
+      bits = bits - 8
+      out[#out + 1] = string.char(math.floor((buffer / 2 ^ bits) % 256))
+      buffer = math.floor(buffer % 2 ^ bits)
+    end
+  end
+  if bits > 0 and buffer ~= 0 then
+    return failure("non-canonical Base32 trailing bits")
+  end
+  return success(table.concat(out))
+end
+
 local function hexEncode(data: string): string
   local out: string[] = {}
   for i: integer = 1, #data do
@@ -277,6 +349,8 @@ return {
   base64Decode = base64Decode,
   base64UrlEncode = base64UrlEncode,
   base64UrlDecode = base64UrlDecode,
+  base32Encode = base32Encode,
+  base32Decode = base32Decode,
   hexEncode = hexEncode,
   hexEncodeUpper = hexEncodeUpper,
   hexDecode = hexDecode,

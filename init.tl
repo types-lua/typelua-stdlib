@@ -19,9 +19,12 @@ import url from "./url"
 import binary from "./binary"
 import unicode from "./unicode"
 import entropy from "./entropy"
+import netip from "./netip"
+import crc32 from "./crc32"
+import collections from "./collections"
 
 return {
-  version = "v0.2.3",
+  version = "v0.2.4",
   bitops = bitops,
   strings = strings,
   lists = lists,
@@ -41,4 +44,7 @@ return {
   binary = binary,
   unicode = unicode,
   entropy = entropy,
+  netip = netip,
+  crc32 = crc32,
+  collections = collections,
 }

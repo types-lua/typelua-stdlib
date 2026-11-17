@@ -57,4 +57,22 @@ return {
     T.eq(encoding.urlEncode("a b"), "a%20b", "url alias")
     T.eq(encoding.urlDecode("a%20b").data, "a b", "url decode alias")
   end,
+  ["Base32"] = function(): void
+    T.eq(encoding.base32Encode(""), "", "empty")
+    T.eq(encoding.base32Encode("f"), "MY======", "f")
+    T.eq(encoding.base32Encode("fo"), "MZXQ====", "fo")
+    T.eq(encoding.base32Encode("foo"), "MZXW6===", "foo")
+    T.eq(encoding.base32Encode("foobar"), "MZXW6YTBOI======", "foobar")
+    T.eq(encoding.base32Decode("MY======").data, "f", "decode f")
+    T.eq(encoding.base32Decode("MZXQ====").data, "fo", "decode fo")
+    T.eq(encoding.base32Decode("MZXW6YTBOI======").data, "foobar", "decode foobar")
+    T.eq(encoding.base32Decode("MZXW6YTBOI").data, "foobar", "unpadded decode")
+    T.ok(not encoding.base32Decode("M").ok, "invalid length")
+    T.ok(not encoding.base32Decode("MZXW6YTBOI=").ok, "bad padding")
+    T.ok(not encoding.base32Decode("MZXW6YTBOI==").ok, "wrong padding")
+    T.ok(not encoding.base32Decode("MZ======").ok, "non-canonical trailing bits")
+    T.ok(not encoding.base32Decode("mzxw6ytboi======").ok, "lowercase rejected")
+    T.ok(not encoding.base32Decode("MZXW6YTB01======").ok, "bad alphabet")
+  end,
+
 }
