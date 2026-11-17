@@ -62,7 +62,7 @@ name = "my-service"
 version = "v0.1.0"
 
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.2.5"
+"github.com/types-lua/typelua-stdlib" = "^v0.2.6"
 ```
 
 ```bash
@@ -74,7 +74,7 @@ The repository is public. If you consume it through a private mirror/fork, use
 the explicit form and point `url` at that mirror:
 
 ```toml
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.5", url = "git@github.com:your-org/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.6", url = "git@github.com:your-org/typelua-stdlib.git" }
 ```
 
 Then import the package root or an individual module:

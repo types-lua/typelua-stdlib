@@ -41,7 +41,7 @@ LuaJIT / Lua 5.1。
 ```toml
 # tlua.toml
 [dependencies]
-"github.com/types-lua/typelua-stdlib" = "^v0.2.5"
+"github.com/types-lua/typelua-stdlib" = "^v0.2.6"
 ```
 
 仓库已公开；如果通过私有镜像/fork 使用，再加 `url` 指向镜像。
