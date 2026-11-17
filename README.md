@@ -34,11 +34,21 @@ print(std.path.join({ "/srv", "app", "config.json" }))
 | `time` | UTC calendar math, ISO-8601 parse/format, day boundaries, durations |
 | `fs` | regular-file read/write/append/lines/size/rename/remove/copy with result records |
 | `random` | deterministic xorshift32 generator, ints/floats/bytes, choice/shuffle/sample |
+| `hash` | SHA-1, SHA-256, HMAC-SHA256, constant-time MAC comparison |
+| `csv` | strict RFC 4180 parser/encoder with limits and quoted multiline fields |
+| `set` | generic set with union/intersection/difference/subset/equality |
+| `semver` | strict SemVer 2.0 parsing, formatting and precedence |
+| `url` | strict absolute URL parser, formatter, query parse/build |
+| `binary` | bounds-checked byte reader/writer with explicit endianness |
+| `unicode` | strict UTF-8 validation, decode/encode, code-point count |
+| `entropy` | OS entropy bytes and UUID v4 generation (POSIX `/dev/urandom`) |
+| `bitops` | portable 32-bit bit operations used by hash/random |
 
-What is deliberately **not** included: YAML/CSV/XML, HTTP, cryptographic hashes,
-directory traversal/listing, timezone databases, localization, and
+What is deliberately **not** included: YAML/XML, HTTP, encryption/signature
+schemes, directory traversal/listing, timezone databases, localization, and
 Unicode code-point iteration. Those belong in focused packages or platform
-adapters.
+adapters. `hash` is an integrity/MAC helper, not a replacement for a vetted
+cryptographic library when side-channel or key-management guarantees matter.
 
 ## Install
 
@@ -51,7 +61,7 @@ version = "v0.1.0"
 [dependencies]
 # Private repository: give the Git URL explicitly so the package manager does
 # not try an anonymous public lookup.
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.1.2", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.0", url = "git@github.com:types-lua/typelua-stdlib.git" }
 ```
 
 ```bash
@@ -266,6 +276,123 @@ random.sample<T>(rng, items, count)
 xorshift32 is deterministic across Lua 5.4 and LuaJIT and is **not** suitable
 for cryptography. `nextInt` rejects ranges wider than 32 bits and uses
 rejection sampling to avoid modulo bias.
+
+### hash
+
+```tl
+hash.sha1(data) / sha1Hex(data)
+hash.sha256(data) / sha256Hex(data)
+hash.hmacSha256(key, data) / hmacSha256Hex(key, data)
+hash.constantTimeEqual(a, b)
+```
+
+Pure byte-string implementations. Use `constantTimeEqual` for MAC/tag
+comparison; it avoids early exit on content differences. SHA-1 is included for
+protocol compatibility, not for new security designs.
+
+### csv
+
+```tl
+csv.parse(text)                                    -- CsvResult
+csv.parseWith(text, { delimiter, maxBytes, maxRows, maxFields, maxFieldBytes })
+csv.encode(rows) / encodeWith(rows, { delimiter })
+```
+
+Strict RFC 4180-style behavior: quoted commas/newlines, doubled quotes,
+CRLF/LF records, and errors for malformed quotes, bare CR, truncated fields and
+limit violations. The encoder uses CRLF between records and quotes only when
+needed.
+
+### set
+
+Set membership uses Lua equality; iteration order is unspecified.
+
+```tl
+Set.new<string>()                                  -- explicit type argument
+s:add(value) / remove(value) / has(value) / contains(value)
+s:size() / isEmpty() / values() / toArray() / clear() / forEach(fn)
+s:union(other) / intersection(other) / difference(other)
+s:isSubsetOf(other) / equals(other) / clone()
+set.from<T>(values)
+```
+
+Bulk operations return new sets and do not mutate inputs.
+
+### semver
+
+```tl
+semver.parse(text)                                 -- SemverResult
+semver.format(version)
+semver.compare(a, b) / compareText(aText, bText)
+semver.isValid(text)
+```
+
+Strict SemVer 2.0: numeric components cannot have leading zeroes, prerelease
+numeric identifiers are validated, and build metadata is ignored for
+precedence.
+
+### url
+
+```tl
+url.parse(text) / parseWith(text, { maxLength })
+url.format(parts)
+url.parseQuery(text)                               -- QueryResult
+url.buildQuery(values)                             -- sorted keys
+```
+
+Strict absolute URLs, bracketed IPv6, ports, userinfo, query/fragment
+preservation, raw control/space rejection and length limits. Query helpers use
+`application/x-www-form-urlencoded` decoding; duplicate keys keep the last
+value. DNS, IDNA and path percent-decoding are not performed.
+
+### binary
+
+```tl
+local r = binary.ByteReader.new(data)
+r:u8() / i8() / u16le() / u16be() / u32le() / u32be() / i32le() / i32be()
+r:bytes(n) / peek(n) / skip(n) / position() / remaining() / eof()
+
+local w = binary.ByteWriter.new()
+w:u8(v) / i8(v) / u16le(v) / u16be(v) / u32le(v) / u32be(v) / i32le(v) / i32be(v)
+w:bytes(data) / append(data) / length() / clear() / toString()
+```
+
+Readers raise on truncation; writers validate numeric ranges. Multi-byte
+methods state their byte order explicitly.
+
+### unicode
+
+```tl
+unicode.valid(text)                                -- strict UTF-8 bool
+unicode.decode(text)                               -- {ok, codepoints, error}
+unicode.encode(codepoints)                         -- {ok, text, error}
+unicode.char(codepoint)                            -- throws on invalid code point
+unicode.length(text)                               -- {ok, length, error}
+unicode.codepointAt(text, bytePosition)            -- {ok, codepoint, error}
+```
+
+Rejects overlong forms, surrogate code points, truncated sequences and values
+above U+10FFFF. Named `unicode` rather than `utf8` so it does not collide with
+Lua 5.4's built-in `utf8` module.
+
+### entropy
+
+```tl
+entropy.available()                                -- read one byte from /dev/urandom
+entropy.bytes(count)                               -- {ok, data, error}, max 1 MiB
+entropy.uuidV4()                                   -- {ok, value, error}
+```
+
+Uses the operating system's `/dev/urandom` directly, never the deterministic
+`random` generator or the clock. On platforms without that device the result is
+an explicit error; there is no insecure fallback. UUID v4 sets the standard
+version/variant bits from 122 random bits.
+
+### bitops
+
+Low-level portable 32-bit operations: `band`, `bor`, `bxor`, `bnot`, `lshift`,
+`rshift`, `rotl`, `rotr`, `add`. Useful when implementing binary formats or
+hashes; application code normally does not need it.
 
 ## Testing
 

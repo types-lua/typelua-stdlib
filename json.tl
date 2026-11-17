@@ -425,6 +425,7 @@ class Parser {
 class Encoder {
   pretty: boolean,
   indent: string,
+  maxDepth: integer = 512,
   seen: any = {},
   failed: boolean = false,
   errorText: string = "",
@@ -512,6 +513,10 @@ class Encoder {
 
   encodeValue(value: any, level: integer): void
     if self.failed then return end
+    if level > self.maxDepth then
+      self:fail("maximum JSON encode depth exceeded")
+      return
+    end
     if value == nil or value == NULL then
       self:emit("null")
       return

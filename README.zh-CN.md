@@ -20,9 +20,18 @@ LuaJIT / Lua 5.1。
 | `time` | UTC 日历、ISO-8601 解析/格式化、日边界、duration |
 | `fs` | 普通文件读写/追加/按行/大小/重命名/删除/复制，统一 result record |
 | `random` | 确定性 xorshift32、整数/浮点/字节、choice/shuffle/sample |
+| `hash` | SHA-1、SHA-256、HMAC-SHA256、常量时间比较 |
+| `csv` | 严格 RFC 4180 解析/编码、引号/多行字段、资源限制 |
+| `set` | 泛型集合、并/交/差/子集/相等 |
+| `semver` | 严格 SemVer 2.0 解析、格式化、优先级比较 |
+| `url` | 严格绝对 URL 解析/格式化、query 解析/构建 |
+| `binary` | 边界检查的字节读写、显式大小端 |
+| `unicode` | 严格 UTF-8 校验、解码/编码、码点计数 |
+| `entropy` | POSIX `/dev/urandom` 安全随机字节、UUID v4 |
+| `bitops` | 可移植 32 位位运算，供 hash/random 使用 |
 
-不包含：YAML/CSV/XML、HTTP、加密哈希、目录遍历、时区数据库、国际化。
-这些应该放到独立包或平台适配层。
+不包含：YAML/XML、HTTP、加密/签名协议、目录遍历、时区数据库、国际化。
+`hash` 是完整性/MAC 辅助模块，不替代经过审计的密码学库。
 
 ## 安装
 
@@ -30,7 +39,7 @@ LuaJIT / Lua 5.1。
 # tlua.toml
 [dependencies]
 # 私有仓库必须显式给 url，避免包管理器按公开仓库探测
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.1.2", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.0", url = "git@github.com:types-lua/typelua-stdlib.git" }
 ```
 
 ```bash

@@ -1,5 +1,6 @@
 --- typelua-stdlib: small, typed, dependency-free standard-library helpers.
 
+import bitops from "./bitops"
 import strings from "./strings"
 import lists from "./lists"
 import maps from "./maps"
@@ -10,9 +11,18 @@ import json from "./json"
 import time from "./time"
 import fs from "./fs"
 import random from "./random"
+import hash from "./hash"
+import csv from "./csv"
+import set from "./set"
+import semver from "./semver"
+import url from "./url"
+import binary from "./binary"
+import unicode from "./unicode"
+import entropy from "./entropy"
 
 return {
-  version = "v0.1.2",
+  version = "v0.2.0",
+  bitops = bitops,
   strings = strings,
   lists = lists,
   maps = maps,
@@ -23,4 +33,12 @@ return {
   time = time,
   fs = fs,
   random = random,
+  hash = hash,
+  csv = csv,
+  set = set,
+  semver = semver,
+  url = url,
+  binary = binary,
+  unicode = unicode,
+  entropy = entropy,
 }

@@ -4,7 +4,7 @@ import fs from "../fs"
 
 return {
   ["root facade exposes every module"] = function(): void
-    T.eq(std.version, "v0.1.2", "version")
+    T.eq(std.version, "v0.2.0", "version")
     T.eq(std.strings.trim(" x "), "x", "strings")
     T.eq(std.lists.sum({ 1, 2 }), 3, "lists")
     T.eq(std.maps.count<string, integer>({ a = 1 }), 1, "maps")
@@ -15,6 +15,15 @@ return {
     T.eq(std.time.iso8601(0), "1970-01-01T00:00:00Z", "time")
     T.ok(std.fs ~= nil, "fs")
     T.ok(std.random.Random ~= nil, "random")
+    T.ok(std.hash ~= nil, "hash")
+    T.ok(std.csv ~= nil, "csv")
+    T.ok(std.set ~= nil, "set")
+    T.ok(std.semver ~= nil, "semver")
+    T.ok(std.url ~= nil, "url")
+    T.ok(std.binary ~= nil, "binary")
+    T.ok(std.bitops ~= nil, "bitops")
+    T.ok(std.unicode ~= nil, "unicode")
+    T.ok(std.entropy ~= nil, "entropy")
   end,
 
   ["JSON file round-trip"] = function(): void

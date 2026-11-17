@@ -77,6 +77,9 @@ return {
     T.ok(json.encodeResult({ [1] = "a", [3] = "b" }).ok == false, "sparse array")
     T.ok(json.encodeResult({ [true] = 1 }).ok == false, "non-string key")
     T.raises(function(): void json.encode(cyclic) end)
+    local deep: any = 1
+    for _: integer = 1, 600 do deep = { deep } end
+    T.ok(json.encodeResult(deep).ok == false, "encode max depth")
   end,
 
   ["pretty printing and round-trip"] = function(): void
