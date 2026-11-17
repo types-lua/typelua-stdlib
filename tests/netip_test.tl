@@ -18,6 +18,8 @@ return {
     T.ok(not netip.parse("1.2.3.256").ok, "range")
     T.ok(not netip.parse("01.2.3.4").ok, "leading zero")
     T.ok(not netip.parse("a.b.c.d").ok, "non-numeric")
+    T.ok(not netip.parse(string.rep("1", 300)).ok, "length limit")
+    T.ok(not netip.parseCidr(string.rep("1", 300) .. "/24").ok, "cidr length limit")
     T.ok(netip.isV4(netip.parse("1.2.3.4").ip!), "isV4")
     T.ok(not netip.isV6(netip.parse("1.2.3.4").ip!), "not v6")
   end,

@@ -58,6 +58,12 @@ local r = std.binary.ByteReader.new(string.char(1, 2))
 print("binary=" .. tostring(r:u16be()))
 print("unicode=" .. tostring(std.unicode.valid("ok")))
 print("csv=" .. std.csv.encode({ { "a", "b" } }))
+print("netip=" .. std.netip.format(std.netip.parse("127.0.0.1").ip!))
+print("crc=" .. std.crc32.crc32cHex("123456789"))
+local q = std.collections.Queue.new<string>(2)
+q:enqueue("x")
+print("queue=" .. tostring(q:dequeue()))
+print("base32=" .. std.encoding.base32Encode("foo"))
 TL
 
 (cd "$APP" && "$TLUA" mod get >/dev/null && "$TLUA" mod vendor >/dev/null)

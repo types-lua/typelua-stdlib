@@ -4,6 +4,7 @@ import collections from "../collections"
 return {
   ["bounded FIFO queue"] = function(): void
     local q = collections.Queue.new<string>(3)
+    T.raises(function(): void collections.Queue.new<string>(0) end)
     T.ok(q:isEmpty(), "empty")
     T.ok(q:enqueue("a"), "enqueue a")
     T.ok(q:enqueue("b"), "enqueue b")
@@ -42,6 +43,11 @@ return {
   end,
 
   ["priority queue is a min-heap and bounded"] = function(): void
+    T.raises(function(): void
+      collections.PriorityQueue.new<integer>(0, function(a: integer, b: integer): boolean
+        return a < b
+      end)
+    end)
     local pq = collections.PriorityQueue.new<integer>(4, function(a: integer, b: integer): boolean
       return a < b
     end)
@@ -59,6 +65,13 @@ return {
     T.eq(pq:pop(), nil, "empty")
     pq:push(10)
     T.eq(pq:toArray()[1], 10, "toArray")
+    local maxHeap = collections.PriorityQueue.new<integer>(3, function(a: integer, b: integer): boolean
+      return a > b
+    end)
+    maxHeap:push(1)
+    maxHeap:push(9)
+    maxHeap:push(5)
+    T.eq(maxHeap:pop(), 9, "max heap")
     pq:clear()
     T.ok(pq:isEmpty(), "clear")
   end,

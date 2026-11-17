@@ -75,7 +75,12 @@ local function isHex(value: string): boolean
   return true
 end
 
+local MAX_TEXT: integer = 256
+
 local function parseV4(text: string): IpResult
+  if #text > MAX_TEXT then
+    return { ok = false, ip = nil, error = "IP address text is too long" }
+  end
   local parts: string[] = splitBy(text, ".")
   if #parts ~= 4 then
     return { ok = false, ip = nil, error = "IPv4 must have four octets" }
@@ -127,6 +132,9 @@ local function parseWords(part: string, allowV4AtEnd: boolean): (integer[], stri
 end
 
 local function parseV6(text: string): IpResult
+  if #text > MAX_TEXT then
+    return { ok = false, ip = nil, error = "IP address text is too long" }
+  end
   if text == "" or findChar(text, "%", 1) > 0 then
     return { ok = false, ip = nil, error = "invalid IPv6 address" }
   end
@@ -262,6 +270,9 @@ local function equal(first: IpAddress, second: IpAddress): boolean
 end
 
 local function parseCidr(text: string): CidrResult
+  if #text > MAX_TEXT + 4 then
+    return { ok = false, cidr = nil, error = "CIDR text is too long" }
+  end
   local slash: integer = findChar(text, "/", 1)
   if slash <= 1 or slash == #text then
     return { ok = false, cidr = nil, error = "CIDR must be address/prefix" }

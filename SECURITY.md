@@ -14,6 +14,7 @@ All structured parsers have explicit defaults and optional overrides:
 | JSON encode | 512 nested arrays/objects, rejects cycles/sparse/mixed tables |
 | CSV | 16 MiB input, 1,000,000 rows, 10,000 fields/row, 1 MiB/field |
 | URL | 8 KiB URL, raw control/space rejected, port 0..65535 |
+| netip | 256-byte address text, strict IPv4/IPv6/CIDR grammar, no DNS/zone IDs |
 | SemVer | 256 bytes, bounded numeric components (<= 2^53-1) |
 | Binary reader | every read is bounds-checked before consuming bytes |
 | Entropy | max 1 MiB per request, explicit error if `/dev/urandom` is unavailable |

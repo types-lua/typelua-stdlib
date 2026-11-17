@@ -24,7 +24,7 @@ import crc32 from "./crc32"
 import collections from "./collections"
 
 return {
-  version = "v0.2.4",
+  version = "v0.2.5",
   bitops = bitops,
   strings = strings,
   lists = lists,
