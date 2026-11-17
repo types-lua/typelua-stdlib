@@ -39,7 +39,7 @@ LuaJIT / Lua 5.1。
 # tlua.toml
 [dependencies]
 # 私有仓库必须显式给 url，避免包管理器按公开仓库探测
-"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.1", url = "git@github.com:types-lua/typelua-stdlib.git" }
+"github.com/types-lua/typelua-stdlib" = { version = "^v0.2.2", url = "git@github.com:types-lua/typelua-stdlib.git" }
 ```
 
 ```bash

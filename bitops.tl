@@ -112,6 +112,24 @@ local function add(a: integer, b: integer): integer
   return math.floor((a + b) % MOD)
 end
 
+--- XOR a byte string with a repeating key (WebSocket masking, stream ciphers
+--- in test code, etc.). An empty key returns the input unchanged.
+local function xorRepeat(data: string, key: string): string
+  if #key == 0 then return data end
+  local out: string[] = {}
+  local keyPosition: integer = 1
+  for i: integer = 1, #data do
+    local dataByte: integer = string.byte(data, i)!
+    local keyByte: integer = string.byte(key, keyPosition)!
+    local low: integer = XOR4[dataByte % 16][keyByte % 16]
+    local high: integer = XOR4[math.floor(dataByte / 16)][math.floor(keyByte / 16)]
+    out[#out + 1] = string.char(high * 16 + low)
+    keyPosition = keyPosition + 1
+    if keyPosition > #key then keyPosition = 1 end
+  end
+  return table.concat(out)
+end
+
 return {
   MOD = MOD,
   band = band,
@@ -123,4 +141,5 @@ return {
   rotl = rotl,
   rotr = rotr,
   add = add,
+  xorRepeat = xorRepeat,
 }

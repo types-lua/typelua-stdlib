@@ -19,6 +19,9 @@ return {
     T.eq(bits.rotl(0x80000001, 1), 3, "rotate left")
     T.eq(bits.rotr(3, 1), 0x80000001, "rotate right")
     T.eq(bits.add(4294967295, 1), 0, "wrap add")
+    T.eq(bits.xorRepeat("\1\2\3", "\1"), "\0\3\2", "xor repeat")
+    T.eq(bits.xorRepeat("abc", ""), "abc", "empty xor key")
+    T.eq(bits.xorRepeat(bits.xorRepeat("hello", "key"), "key"), "hello", "xor round-trip")
   end,
 
   ["SHA-1 vectors"] = function(): void
