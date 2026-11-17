@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install TypeLua
+        run: |
+          curl -fsSL -o /tmp/tlua \
+            https://github.com/types-lua/TypeLua/releases/download/v0.9.9/tlua-linux-amd64
+          chmod +x /tmp/tlua
+          sudo mv /tmp/tlua /usr/local/bin/tlua
+          tlua version
+
+      - name: Install Lua runtimes
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.4 luajit
+
+      - name: Type-check
+        run: tlua check
+
+      - name: Embedded runtime tests
+        run: tlua test
+
+      - name: Lua 5.4 tests
+        run: tlua test --lua lua5.4
+
+      - name: LuaJIT / Lua 5.1 tests
+        run: tlua test --lua luajit --target 5.1
+
+      - name: Package dependency smoke test
+        run: ./scripts/check-package.sh
+
+      - name: Build all modules
+        run: tlua build
