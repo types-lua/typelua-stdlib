@@ -1,6 +1,6 @@
 # typelua-stdlib
 
-A small, typed, dependency-free standard-library package for
+A typed, dependency-free standard-library package for
 [TypeLua](https://github.com/types-lua/TypeLua), built for Lua 5.4 and
 LuaJIT/Lua 5.1.
 

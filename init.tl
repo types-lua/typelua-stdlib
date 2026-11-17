@@ -1,4 +1,4 @@
---- typelua-stdlib: small, typed, dependency-free standard-library helpers.
+--- typelua-stdlib: typed, dependency-free standard-library helpers.
 
 import bitops from "./bitops"
 import strings from "./strings"

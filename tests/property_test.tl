@@ -6,6 +6,7 @@ import time from "../time"
 import random from "../random"
 import csv from "../csv"
 import binary from "../binary"
+import netip from "../netip"
 
 local function randomString(rng: any, maxLength: integer): string
   local length: integer = rng:nextInt(0, maxLength)
@@ -164,6 +165,24 @@ return {
       T.ok(reader:i32le() >= -1000000000, "i32le")
       T.ok(reader:i32be() >= -1000000000, "i32be")
       T.ok(reader:eof(), "binary eof")
+    end
+  end,
+
+  ["IP address format/parse round-trip"] = function(): void
+    local rng = random.Random.new(8642)
+    for _: integer = 1, 200 do
+      local v4bytes: string = rng:nextBytes(4)
+      local v4: any = { version = 4, bytes = v4bytes }
+      local v4text: string = netip.format(v4)
+      local v4parsed = netip.parse(v4text)
+      T.ok(v4parsed.ok, "v4 parse")
+      T.ok(netip.equal(v4, v4parsed.ip!), "v4 round-trip")
+      local v6bytes: string = rng:nextBytes(16)
+      local v6: any = { version = 6, bytes = v6bytes }
+      local v6text: string = netip.format(v6)
+      local v6parsed = netip.parse(v6text)
+      T.ok(v6parsed.ok, "v6 parse")
+      T.ok(netip.equal(v6, v6parsed.ip!), "v6 round-trip")
     end
   end,
 
